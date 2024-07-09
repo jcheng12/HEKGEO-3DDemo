@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { XYZLoader } from 'three/addons/loaders/XYZLoader.js';
+import { PCDLoader } from 'three/addons/loaders/PCDLoader.js';
 import GUI from 'lil-gui';
 
 
@@ -49,7 +50,7 @@ function init() {
   scene.add( new THREE.ArrowHelper( new THREE.Vector3( 0,0,1 ), arrowPos, 10, 0x0000FF, 1, 0.5 ) );
 
   // Sphere
-  const sphereGeometry = new THREE.SphereGeometry( 1.0, 20, 10 );
+  const sphereGeometry = new THREE.SphereGeometry( 0.5, 20, 10 );
   const sphereMaterial = new THREE.MeshPhongMaterial( { color: 'rgb(255,255,255)', emissive: 0x222222 } );
   let sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
   sphere.position.set( 0, 0, 0);
@@ -70,15 +71,26 @@ function init() {
   scene.add(ellipse)
 
   // Points (XYZ)
-  let points
-  const loader = new XYZLoader();
-  loader.load( 'models/points.xyz', function (geometry) {
-    geometry.center();
-    const vertexColors = ( geometry.hasAttribute( 'color' ) === true );
-    const material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-    points = new THREE.Points( geometry, material );
-    scene.add(points);
-  } );
+  // let points
+  // const loader = new XYZLoader();
+  // loader.load( 'models/points.xyz', function (geometry) {
+  //   geometry.center();
+  //   const vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+  //   const material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+  //   points = new THREE.Points( geometry, material );
+  //   scene.add(points);
+  // } );
+
+  // Points (PCD)
+  const loader = new PCDLoader();
+  loader.load( './models/simple.pcd', function ( points ) {
+    points.geometry.center();
+    points.geometry.rotateX( Math.PI );
+    points.name = 'simple.pcd';
+    points.material = new THREE.PointsMaterial( { size: 0.1, vertexColors: 0xFF0000 } );
+    scene.add( points );
+  });
+
 
   // Points (Buffer)
   // let points;
