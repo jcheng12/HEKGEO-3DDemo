@@ -4,12 +4,38 @@ import { XYZLoader } from 'three/addons/loaders/XYZLoader.js';
 import { PCDLoader } from 'three/addons/loaders/PCDLoader.js';
 import GUI from 'lil-gui';
 
-
 let camera, scene, renderer;
+
+const demoJson = {
+  "data": [{
+    "name": "Test1",
+    "color": 0xFF0000,
+    "points": [
+      { "vertex": [1,1,1] },
+      { "vertex": [2,2,2] },
+      { "vertex": [3,3,3] }
+    ],
+    "points_list": [2,2,2,3,3,3]
+  },{
+    "name": "Test2",
+    "color": 0x00FF00,
+    "points": [
+      { "vertex": [-1,-1,-1] },
+      { "vertex": [-2,-2,-2] },
+      { "vertex": [-3,-3,-3] }
+    ]
+  }]
+}
 
 init();
 
 function init() {
+  // Fetch the example json (Right now it's local but it's same procedure for server)
+  // fetch('./models/demo.json')
+  //   .then(response => response.json())
+  //   .then(json => console.log(json))
+  //   .catch(console.log('JSON does not exist!'))
+
   scene = new THREE.Scene();
 
   // GUI
@@ -82,47 +108,24 @@ function init() {
   // } );
 
   // Points (PCD)
-  const loader = new PCDLoader();
-  loader.load( './models/simple.pcd', function ( points ) {
-    points.geometry.center();
-    points.geometry.rotateX( Math.PI );
-    points.name = 'simple.pcd';
-    points.material = new THREE.PointsMaterial( { size: 0.1, vertexColors: 0xFF0000 } );
-    scene.add( points );
-  });
+  // const loader = new PCDLoader();
+  // loader.load( './models/simple.pcd', function ( points ) {
+  //   points.geometry.center();
+  //   points.geometry.rotateX( Math.PI );
+  //   points.name = 'simple.pcd';
+  //   points.material = new THREE.PointsMaterial( { size: 0.1, vertexColors: 0xFF0000 } );
+  //   scene.add( points );
+  // });
 
-
-  // Points (Buffer)
-  // let points;
-  // const particles = 500000;
-  // const geometry = new THREE.BufferGeometry();
-  // const positions = [];
-  // const colors = [];
-  // const color = new THREE.Color();
-  // const n = 1000, n2 = n / 2; // particles spread in the cube
-  // for ( let i = 0; i < particles; i ++ ) {
-  //   // positions
-  //   const x = Math.random() * n - n2;
-  //   const y = Math.random() * n - n2;
-  //   const z = Math.random() * n - n2;
-
-  //   positions.push( x, y, z );
-
-  //   // colors
-  //   const vx = ( x / n ) + 0.5;
-  //   const vy = ( y / n ) + 0.5;
-  //   const vz = ( z / n ) + 0.5;
-  //   color.setRGB( vx, vy, vz, THREE.SRGBColorSpace );
-  //   colors.push( color.r, color.g, color.b );
-  // }
-
-  // geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-  // geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-  // geometry.computeBoundingSphere();
-  // const material = new THREE.PointsMaterial( { size: 15, vertexColors: true } );
-  // points = new THREE.Points( geometry, material );
-  // scene.add( points );
-
+  // Points (Buffer load from JSON object)
+  Object.values(demoJson.data).forEach((demoJsonObj) => {
+    let demoPos = []
+    demoJsonObj.points.map((v)=>{demoPos.push(v.vertex[0], v.vertex[1], v.vertex[2])})
+    const demoGeometry = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(demoPos, 3))
+    const demoMaterial = new THREE.PointsMaterial({color: demoJsonObj.color})
+    const demoPoints = new THREE.Points(demoGeometry, demoMaterial)
+    scene.add (demoPoints)
+  })
 
   // Resize Scene
   window.addEventListener("resize", onWindowResize);

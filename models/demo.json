@@ -1,0 +1,19 @@
+{
+  "data": [{
+    "name": "Test1",
+    "color": "0xFF0000",
+    "points": [
+      {
+        "vertex": [2,2,2]
+      }
+    ]
+  },{
+    "name": "Test2",
+    "color": "0x00FF00",
+    "points": [
+      {
+        "vertex": [-2,-2,-2]
+      }
+    ]
+  }]
+}
